@@ -28,28 +28,29 @@ curl -k https://thanos-querier-openshift-monitoring.apps.ocp.dev.net/api/v1/stat
 
 #### Create a service account
 
-Name: grafana-datasource-editor
-Roles: Admin (need for write datasource)
+- Name: grafana-datasource-editor
+- Roles: Admin (need for write datasource)
 
 #### Add service account token (your-grafana-api-key)
 
-Name: ocp-prometheus-datasource-updater
+- Name: ocp-prometheus-datasource-updater
 
 #### Verify in grafana pod
 
 ```
-curl -H "Authorization: Bearer <YOUR_SERVICE_ACCOUNT_TOKEN>" http://<grafana-server>/api/datasources
+curl -H "Authorization: Bearer <your-grafana-api-key>" http://<grafana-server>/api/datasources
 ```
 
 
 ### 5. Create a Prometheus Datasource (using grafana Web UI)
 
-Connection
-- Prometheus server URL= https://thanos-querier-openshift-monitoring.apps.ocp.dev.net
+Prometheus server URL
+- OCP for example https://thanos-querier-openshift-monitoring.apps.ocp.dev.net
 
 
 ### 6. Create a cronjob to update authorization token of Prometheus datasource
 
+Pull secret to pull image of cronjob from docker.io
 ```
 oc create secret docker-registry my-dockerhub-secret \
   --docker-server=docker.io \
@@ -58,6 +59,7 @@ oc create secret docker-registry my-dockerhub-secret \
   --docker-email=<your-email>
 ```
 
+Add configurations for grafana
 ```
 kubectl create secret generic grafana-credentials \
   --from-literal=GRAFANA_API_KEY=<your-grafana-api-key> \
@@ -71,6 +73,7 @@ kubectl create configmap prometheus-config \
   -n grafana
 ```
 
+Create cronjob
 ```
 oc apply -f manifests/k8s/cronjob-sa-and-rb.yaml
 oc apply -f manifests/ocp/cronjob.yaml
