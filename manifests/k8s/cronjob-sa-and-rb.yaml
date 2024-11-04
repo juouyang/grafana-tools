@@ -2,13 +2,13 @@
 apiVersion: v1
 kind: ServiceAccount
 metadata:
-  name: grafana-token-updater
+  name: grafana-editor
   namespace: grafana
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
-  name: grafana-token-updater
+  name: grafana-editor
   namespace: grafana
 rules:
 - apiGroups: [""]
@@ -34,12 +34,12 @@ rules:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
-  name: grafana-token-updater
+  name: grafana-editor
   namespace: grafana
 subjects:
 - kind: ServiceAccount
-  name: grafana-token-updater
+  name: grafana-editor
 roleRef:
   kind: Role
-  name: grafana-token-updater
+  name: grafana-editor
   apiGroup: rbac.authorization.k8s.io

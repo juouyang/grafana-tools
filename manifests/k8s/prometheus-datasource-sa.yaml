@@ -1,0 +1,49 @@
+# prometheus-datasource-sa.yaml
+
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: prometheus-datasource-sa
+  namespace: grafana
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: custom-prometheus-view
+rules:
+  - apiGroups: ["monitoring.coreos.com"]
+    resources: ["prometheuses", "prometheuses/status", "prometheuses/api"]
+    verbs: ["create", "get", "list", "watch"]
+  - apiGroups: ["monitoring.coreos.com"]
+    resources: ["alertmanagers", "alertmanagers/status", "alertmanagers/api"]
+    verbs: ["create", "get", "list", "watch"]
+  - apiGroups: ["monitoring.coreos.com"]
+    resources: ["thanosrulers", "thanosrulers/status", "thanosrulers/api"]
+    verbs: ["create", "get", "list", "watch"]
+  - apiGroups: ["monitoring.coreos.com"]
+    resources: ["servicemonitors", "servicemonitors/status", "servicemonitors/api"]
+    verbs: ["create", "get", "list", "watch"]
+  - apiGroups: ["monitoring.coreos.com"]
+    resources: ["podmonitors", "podmonitors/status", "podmonitors/api"]
+    verbs: ["create", "get", "list", "watch"]
+  - apiGroups: ["grafana.integreatly.org"]
+    resources: ["grafanadatasources", "grafanadatasources/health"]
+    verbs: ["create", "get", "list", "watch"]
+  - apiGroups: ["grafana.integreatly.org"]
+    resources: ["grafanadashboards"]
+    verbs: ["create", "get", "list", "watch"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: prometheus-datasource-sa-custom-prometheus-view-binding
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: custom-prometheus-view
+subjects:
+  - kind: ServiceAccount
+    name: prometheus-datasource-sa
+    namespace: grafana
